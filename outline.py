@@ -13,21 +13,20 @@ def print_cards(whos_cards, input_list):
     for index, _ in enumerate(input_list):
         print(deck[input_list[index]])
 
-dealer_bust = False
-player_bust = False
 start = 1 
 
 #Game start
 
 while start == 1:
-
+    dealer_bust = False
+    player_bust = False
 #Step 1: Deck Generation
     deck = deck_generator()
     players_cards = []
     dealers_cards = []
     players_value = 0
     dealers_value = 0
-    counter = 0
+    draw_card_number = 0
     for number in range(0,4):
         if number < 2:
             players_cards.append(number)
@@ -35,14 +34,14 @@ while start == 1:
         else:
             dealers_cards.append(number)
             dealers_value += check_value(deck[number])
-        counter += 1
+        draw_card_number += 1
     
     print_cards('Players', players_cards)
+    print(f'Your card value is: {players_value}')
     print('-'*20)    
     print(f"Dealer's first card is: \n{deck[dealers_cards[0]]} \nSecond card is uknown")   
     print('-'*20)
-    print(players_value)
-    print(dealers_value)
+
 #Step 3: player has blackjack!
 
     if players_value == 21:
@@ -54,32 +53,33 @@ while start == 1:
         while True:
             players_choice = input('Hit or Stay? ')
             if players_choice.upper() == "HIT":
-                players_cards.append(counter)
-                players_value += check_value(deck[counter])
+                players_cards.append(draw_card_number)
+                players_value += check_value(deck[draw_card_number])
                 print_cards('Players', players_cards)
-                counter += 1
+                draw_card_number += 1
                 print(players_value)
             elif players_choice.upper() == 'STAY':
                 break
-            if players_value > 21:
-                players_value = check_if_ace(players_value, players_cards, deck)
+            if players_value > 21 and check_if_ace(players_value, players_cards, deck) == True:
+                players_value -= 10
+            elif players_value > 21: 
                 player_bust = True
                 print('-' * 20, '\nBUSTED') 
                 break
 
 #Step 5: Dealer hit me
 
-    if players_value < 22:
-        while players_value > dealers_value and players_value < 22:
-            dealers_cards.append(counter)
-            dealers_value += check_value(deck[counter])
-            counter += 1
-            if dealers_value > 21:
-                check_if_ace(dealers_value, dealers_cards, deck)
-                if dealers_value > 21:
-                    dealer_bust = True
-                    print('-' * 20, '\nDEALER IS BUSTED') 
-                    break
+    if players_value <= 21:
+        while players_value > dealers_value and players_value <= 21:
+            dealers_cards.append(draw_card_number)
+            dealers_value += check_value(deck[draw_card_number])
+            draw_card_number += 1
+            if dealers_value > 21 and check_if_ace(dealers_value, dealers_cards, deck) == True:
+                dealers_value -= 10 
+            elif dealers_value > 21:    
+                dealer_bust = True
+                print('-' * 20, '\nDEALER IS BUSTED') 
+                break
 
     print_cards('Players', players_cards)
     print_cards('Dealers', dealers_cards)

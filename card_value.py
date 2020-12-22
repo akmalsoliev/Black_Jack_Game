@@ -10,5 +10,5 @@ def check_value(card):
 def check_if_ace(value, input_list, deck):
     for cards in input_list:
         if deck[cards] == 'A':
-            value -= 10
-    return value
+            return True
+    return False

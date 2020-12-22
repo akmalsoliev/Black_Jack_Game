@@ -1,4 +1,5 @@
 import random
+import future_changes
 
 colors = ['Clubs', 'Diamonds', 'Hearts', 'Spades']
 card_names = ['Ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King']

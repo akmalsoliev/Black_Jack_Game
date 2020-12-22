@@ -13,7 +13,6 @@ def print_cards(whos_cards, input_list):
     for index, _ in enumerate(input_list):
         print(deck[input_list[index]])
 
-
 dealer_bust = False
 player_bust = False
 start = 1 
@@ -42,7 +41,8 @@ while start == 1:
     print('-'*20)    
     print(f"Dealer's first card is: \n{deck[dealers_cards[0]]} \nSecond card is uknown")   
     print('-'*20)
-
+    print(players_value)
+    print(dealers_value)
 #Step 3: player has blackjack!
 
     if players_value == 21:
@@ -61,31 +61,29 @@ while start == 1:
                 print(players_value)
             elif players_choice.upper() == 'STAY':
                 break
-            if players_value>=22:
+            if players_value > 21:
                 players_value = check_if_ace(players_value, players_cards, deck)
                 player_bust = True
-                print('BUSTED')
+                print('-' * 20, '\nBUSTED') 
                 break
 
 #Step 5: Dealer hit me
 
     if players_value < 22:
-        while True:
-            if 17 > dealers_value:
-                dealers_cards.append(counter)
-                dealers_value += check_value(deck[counter])
-                print_cards('Dealers', players_cards)
-                counter += 1
-            elif 21 > dealers_value > 17:
-                break
-            elif dealers_value >= 22:
+        while players_value > dealers_value and players_value < 22:
+            dealers_cards.append(counter)
+            dealers_value += check_value(deck[counter])
+            counter += 1
+            if dealers_value > 21:
                 check_if_ace(dealers_value, dealers_cards, deck)
-                dealer_bust = True
-                print('DEALER IS BUSTED!')
-                break
-    
+                if dealers_value > 21:
+                    dealer_bust = True
+                    print('-' * 20, '\nDEALER IS BUSTED') 
+                    break
+
     print_cards('Players', players_cards)
     print_cards('Dealers', dealers_cards)
+    print('-'*20)
     print(f"Your total is {players_value} and dealer's total is {dealers_value}")
 
 #Step 6: Check the winner    

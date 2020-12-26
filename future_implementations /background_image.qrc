@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="background">
+    <file>other_img/table_background.png</file>
+  </qresource>
+</RCC>

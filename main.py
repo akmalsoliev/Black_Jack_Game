@@ -13,11 +13,11 @@ def print_cards(whos_cards, input_list):
     for index, _ in enumerate(input_list):
         print(deck[input_list[index]])
 
-start = 1 
+start = True
 
 #Game start
 
-while start == 1:
+while start == True:
     dealer_bust = False
     player_bust = False
 #Step 1: Deck Generation
@@ -105,4 +105,4 @@ while start == 1:
 
     restart = input('Would you like to restart?')
     if restart.upper() != "YES":
-        start = 0
+        start = False

@@ -1,108 +1,56 @@
-#Blackjack game
+import card_deck_support
+from utilities import * 
 
-# print('Hello and welcome to our Casino, you have chosen Blackjack Table')
-# start = input("To start press any key")
+colors = ['Clubs', 'Diamonds', 'Hearts', 'Spades'] 
+card_names = {'Ace': 11, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'Jack': 10, 'Queen': 10, 'King': 10}
 
-#Step 0: Create a deck, give cards value 
-from card_support import *
-from card_value import *
+dealer_bust = False
+player_bust = False
 
-def print_cards(whos_cards, input_list):
-    print('-' *20)
-    print(f'{whos_cards} cards are:')
-    for index, _ in enumerate(input_list):
-        print(deck[input_list[index]])
+def main():
+    while True:
+        play_black_jack()
+        user_input = input("Would you like to restart the game? ")
+        if user_input.upper() != "YES":
+            break
 
-start = True
+def play_black_jack():
 
-#Game start
+    global dealer_bust
+    global player_bust
+    deck = card_deck_support.Deck(colors, card_names)
 
-while start == True:
-    dealer_bust = False
-    player_bust = False
-#Step 1: Deck Generation
-    deck = deck_generator()
-    players_cards = []
-    dealers_cards = []
-    players_value = 0
-    dealers_value = 0
-    draw_card_number = 0
-    for number in range(0,4):
-        if number < 2:
-            players_cards.append(number)
-            players_value += check_value(deck[number])
-        else:
-            dealers_cards.append(number)
-            dealers_value += check_value(deck[number])
-        draw_card_number += 1
+    player1 = deck.draw_2()
+    dealer = deck.draw_2()
+
+    player1_value = hand_score(player1)
+    dealer_value = hand_score(dealer)
+
+    while True:
+        print_out_information(player1, player1_value, dealer, dealer_value, card_reveale=False)
+        player_input = input('Hit or Stay? ')
+        if player_input.upper() == 'HIT':
+            new_draw = deck.card_draw()
+            player1.append(new_draw)
+            print('You have drawn ', new_draw.print_card_name(), '\n', '-'*30, '\n')
+            player1_value = hand_score(player1)
+        elif player_input.upper() == 'STAY':
+            break
+        if player1_value > 21:
+            player_bust = True
+            break
     
-    print_cards('Players', players_cards)
-    print(f'Your card value is: {players_value}')
-    print('-'*20)    
-    print(f"Dealer's first card is: \n{deck[dealers_cards[0]]} \nSecond card is uknown")   
-    print('-'*20)
-
-#Step 3: player has blackjack!
-
-    if players_value == 21:
-        print('BLACKJACK!')
-
-#Step 4: pass or hit me - Player
-
-    else:
-        while True:
-            players_choice = input('Hit or Stay? ')
-            if players_choice.upper() == "HIT":
-                players_cards.append(draw_card_number)
-                players_value += check_value(deck[draw_card_number])
-                print_cards('Players', players_cards)
-                draw_card_number += 1
-                print(players_value)
-            elif players_choice.upper() == 'STAY':
-                break
-            if players_value > 21 and check_if_ace(players_value, players_cards, deck) == True:
-                players_value -= 10
-            elif players_value > 21: 
-                player_bust = True
-                print('-' * 20, '\nBUSTED') 
-                break
-
-#Step 5: Dealer hit me
-
-    if players_value <= 21:
-        while players_value > dealers_value and players_value <= 21:
-            dealers_cards.append(draw_card_number)
-            dealers_value += check_value(deck[draw_card_number])
-            draw_card_number += 1
-            if dealers_value > 21 and check_if_ace(dealers_value, dealers_cards, deck) == True:
-                dealers_value -= 10 
-            elif dealers_value > 21:    
-                dealer_bust = True
-                print('-' * 20, '\nDEALER IS BUSTED') 
-                break
-
-    print_cards('Players', players_cards)
-    print_cards('Dealers', dealers_cards)
-    print('-'*20)
-    print(f"Your total is {players_value} and dealer's total is {dealers_value}")
-
-#Step 6: Check the winner    
+    if player1_value <= 21:
+        while player1_value >= dealer_value <= 21:
+            dealer.append(deck.card_draw())
+            dealer_value = hand_score(dealer)
+        if dealer_value > 21:
+            dealer_bust = True
     
-    if dealer_bust == False and player_bust == False:
-        if players_value > dealers_value:
-            print("Congrats you won!")
-        elif players_value < dealers_value:
-            print("I'm sorry, but you lost.")
-        elif players_value == dealers_value:
-            print('TIE!')
-    
-    elif dealer_bust == True and player_bust == False:
-        print("Dealer is busted! \nCongrats you won!")
-    elif dealer_bust == False and player_bust == True:
-        print("You are busted! \nI'm sorry, but you lost.")
+    print_out_information(player1, player1_value, dealer, dealer_value, card_reveale=True)
+
+    check_win(player1_value, dealer_value, dealer_bust, player_bust)
 
 
-
-    restart = input('Would you like to restart?')
-    if restart.upper() != "YES":
-        start = False
+if __name__ == "__main__":
+    main()
